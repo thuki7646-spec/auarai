@@ -1,28 +1,40 @@
-const apiKey = 'a624721f5ac51fbe51589472fac68765';
+const apiKey = "a624721f5ac51fbe51589472fac68765";
 
-function getWeather() {
-  const city = document.getElementById('cityInput').value.trim();
-  const result = document.getElementById('result');
+async function getWeather() {
+    const city = document.getElementById("cityInput").value;
+    const result = document.getElementById("result");
 
-  if (!city) {
-    result.innerHTML = '❗ Қала атауын енгізіңіз';
-    return;
-  }
+    if (!city) {
+        result.innerHTML = "Қала атауын енгізіңіз!";
+        return;
+    }
 
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
-    city
-  )}&appid=${apiKey}&units=metric&lang=kk`;
+    try {
+        const response = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=kk`
+        );
 
-  fetch(url)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('❌ Қала табылмады');
-      }
-      return response.json();
-    })
-    .then(data => {
-      result.innerHTML = `
-        <h3>📍 ${data.name}</h3>
-        <p>🌡 Температура: ${data.main.temp} °C</p>
-        <p>☁ Ауа райы: ${data.weather[0].description}</p>
-        <p>💧 Ылғалдылық: ${data.main.humidity}%</p>
+        if (!response.ok) throw new Error("Қала табылмады");
+
+        const data = await response.json();
+
+        result.innerHTML = `
+            <p><b>Қала:</b> ${data.name}</p>
+            <p><b>Температура:</b> ${data.main.temp} °C</p>
+            <p><b>Сипаттама:</b> ${data.weather[0].description}</p>
+            <p><b>Ылғалдылық:</b> ${data.main.humidity}%</p>
+        `;
+
+        saveHistory(city);
+
+    } catch (error) {
+        result.innerHTML = error.message;
+    }
+}
+
+function saveHistory(city) {
+    let history = JSON.parse(localStorage.getItem("cities")) || [];
+    history.unshift(city);
+    history = [...new Set(history)].slice(0, 3);
+    localStorage.setItem("cities", JSON.stringify(history));
+}
