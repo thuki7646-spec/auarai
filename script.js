@@ -1,4 +1,4 @@
-const apiKey = 'YOUR_API_KEY_HERE';
+const apiKey = 'ӨЗ_API_KEY_ОСЫ_ЖЕРГЕ';
 
 function getWeather() {
   const city = document.getElementById('cityInput').value;
@@ -25,31 +25,8 @@ function getWeather() {
         <p>☁ Ауа райы: ${data.weather[0].description}</p>
         <p>💧 Ылғалдылық: ${data.main.humidity}%</p>
       `;
-      saveHistory(city);
-      showHistory();
     })
     .catch(error => {
       result.innerHTML = error.message;
     });
 }
-
-function saveHistory(city) {
-  let cities = JSON.parse(localStorage.getItem('cities')) || [];
-  cities.unshift(city);
-  cities = [...new Set(cities)].slice(0, 3);
-  localStorage.setItem('cities', JSON.stringify(cities));
-}
-
-function showHistory() {
-  const history = JSON.parse(localStorage.getItem('cities')) || [];
-  const list = document.getElementById('history');
-  list.innerHTML = '';
-
-  history.forEach(city => {
-    const li = document.createElement('li');
-    li.textContent = city;
-    list.appendChild(li);
-  });
-}
-
-showHistory();
